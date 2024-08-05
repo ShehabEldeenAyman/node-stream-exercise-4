@@ -2,6 +2,7 @@ const express = require('express')
 const https = require('https');
 const fs = require('fs');
 const N3 = require('n3');
+const rdf = require('rdflib');
 
 var SparqlParser = require('sparqljs').Parser;
 
@@ -16,7 +17,7 @@ const regexBasicDate = /^\d{8}$/;
 write_stream = fs.createWriteStream("output.txt",{flags:'a'});
 
 parser =  new N3.StreamParser();
-//rdfStream = fs.createReadStream('waterdata.ttl');
+rdfStream_file = fs.createReadStream('output.txt');
 
 https.get(url,(Response)=>{
 
@@ -70,5 +71,40 @@ rdfStream.on('error', (err) => {
   });
 
 */
+
+const store = rdf.graph();
+const mimeType = 'text/turtle';
+
+
+
+
+
+
+
+
+
+const query = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX time: <http://www.w3.org/2006/time#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?observedProperty ?phenomenonTime ?resultValue ?resultUnit
+WHERE {
+    <https://brugge.be/id/observatie/2016000156/4> 
+        rdf:type <http://def.isotc211.org/iso19156/2011/Observation#OM_Observation> ;
+        <http://def.isotc211.org/iso19156/2011/Observation#OM_Observation.observedProperty> ?observedProperty ;
+        <http://def.isotc211.org/iso19156/2011/Observation#OM_Observation.phenomenonTime> ?phenomenonTimeNode ;
+        <http://def.isotc211.org/iso19156/2011/Observation#OM_Observation.result> ?resultNode .
+        
+    ?phenomenonTimeNode time:inXSDDateTime ?phenomenonTime .
+
+    ?resultNode <http://def.isotc211.org/iso19103/2005/UnitsOfMeasure#Measure.value> ?valueNode .
+    ?valueNode <https://schema.org/value> ?resultValue ;
+               <https://schema.org/unitCode> ?resultUnit .
+}
+`;
+
+
 
 
