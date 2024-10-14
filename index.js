@@ -19,6 +19,8 @@ write_stream = fs.createWriteStream("output.txt",{flags:'a'});
 parser =  new N3.StreamParser();
 rdfStream_file = fs.createReadStream('output.txt');
 
+data ='';
+
 https.get(url,(Response)=>{
 
     Response.pipe(parser);
@@ -27,6 +29,7 @@ https.get(url,(Response)=>{
     Response.on("data", function(chunk) {
         console.log("BODY: " + chunk);
         write_stream.write(chunk+"\n");
+        data.
       });
     
 });
@@ -63,14 +66,6 @@ parser.on('error',(err)=>{
     console.error(`${err.message}`);
 });
 
-//rdfStream.pipe(parser);
-
-/*
-rdfStream.on('error', (err) => {
-    console.error(`Error reading the file: ${err.message}`);
-  });
-
-*/
 
 const store = rdf.graph();
 const mimeType = 'text/turtle';
